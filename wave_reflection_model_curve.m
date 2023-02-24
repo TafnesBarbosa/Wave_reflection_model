@@ -8,19 +8,19 @@ sigma = 5*10^(-3); % Condutividade da superficie refletora (solo comum) em Sieme
 c = 299792458; % Velocidade da luz no vacuo em m/s
 Freq = 2250000000; % Frequencia da onda em Hz
 lambda = c/Freq; % Comprimento de onda em metros
-omega = 2*pi*Freq; % FrequÍncia angular
+omega = 2*pi*Freq; % Frequ√™ncia angular
 et = e-1j*sigma/(omega*e0); % Permissividade eletrica efetiva da superficie refletora
 
-Pt = 20; % PotÍncia do transmissor
+Pt = 20; % Pot√™ncia do transmissor
 VSWR = 1.5; % Voltage Standing Wave Radio
 gama = 0.007; % Atenuacao especifica da atmosfera para freq = 2.25 GHz em dB/km
 k_boltz = 1.38*10^(-23); % Constante de Boltzmann
 BW = 2.32*10^6; % Largura de banda
-Te = 211.4; % Temperatura de ruÌdo na entrada do LNA
+Te = 211.4; % Temperatura de ru√≠do na entrada do LNA
 
 close all
 % dl : Distancia horizontal entre aeronave e antena receptora em metros
-% (paralela ‡ superfÌcie da Terra)
+% (paralela √† superf√≠cie da Terra)
 % htl: Altura da aeronave em metros
 dl = 100:50:350000;
 htl = 40:20:8000;
@@ -50,7 +50,7 @@ for m=1:length(dl)
             theta(m,n) = atan(d/(hr+ht)); % Angulo de incidencia da reflexao com a vertical em radianos
             alpha(m,n) = atan((ht-hr)/d); % Angulo entre o raio da visada direta e a horizontal em radianos
             beta(m,n) = atan((ht+hr)/d); % Angulo entre o raio refletido e a horizontal em radianos
-        elseif at(n) == cos(b(m)-acos(ar)) % Tem visada direta e n„o reflete
+        elseif at(n) == cos(b(m)-acos(ar)) % Tem visada direta e n√£o reflete
             ht = 0;
             hr = 0;
             d = sqrt((R+htl(n))^2-R^2) + sqrt((R+hr)^2-R^2);
@@ -60,7 +60,7 @@ for m=1:length(dl)
             theta(m,n) = pi/2; % Angulo de incidencia da reflexao com a vertical em radianos
             alpha(m,n) = 0; % Angulo entre o raio da visada direta e a horizontal em radianos
             beta(m,n) = 0; % Angulo entre o raio refletido e a horizontal em radianos
-        else % N„o tem visada direta
+        else % N√£o tem visada direta
             R1(m,n) = Inf; % Distancia da visada direta entre aeronave e antena receptora em metros
             R2(m,n) = Inf; % Distancia percorrida pelo raio refletido em solo entre aeronave e antena receptora
             theta(m,n) = pi/2; % Angulo de incidencia da reflexao com a vertical em radianos
@@ -74,12 +74,14 @@ for m=1:length(dl)
 end
 
 %% Para plotagem
-delta_phi = 2*pi*(R2-R1)/lambda; % DiferenÁa de fase
+delta_phi = 2*pi*(R2-R1)/lambda; % Diferen√ßa de fase
+delta_phi(isnan(delta_phi)) = 0; % Remove NANs
 cos_theta_t = et-sin(theta).^2;
-r_p = (et*cos(theta)-sqrt(cos_theta_t))./(et*cos(theta)+sqrt(cos_theta_t)); % coeficiente de reflex„o relativo efetivo
-f_com_abs_com_ref = 10*log10((lambda^2./(4*pi*R1).^2).*abs(1+r_p.^2.*R1.^2./R2.^2.*exp(1j*2*delta_phi).*10.^(-gama*(R2-R1)/10000)+2*R1./R2.*r_p.*exp(1j*delta_phi).*cos(alpha+beta).*10.^(-gama*(R2-R1)/20000)))-gama*R1/1000; % perda com absorÁ„o e reflex„o
-f_ideal = 10*log10(lambda^2./((4*pi)^2*R1.^2)); % Perda no espaÁo sem reflex„o e sem absorÁ„o
-f_sem_ref = 10*log10(lambda^2./((4*pi)^2*R1.^2)) - gama*R1/1000; % Perda no espaÁo sem reflex„o
+r_p = (et*cos(theta)-sqrt(cos_theta_t))./(et*cos(theta)+sqrt(cos_theta_t)); % coeficiente de reflex√£o relativo efetivo
+f_com_abs_com_ref = 10*log10((lambda^2./(4*pi*R1).^2).*abs(1+r_p.^2.*R1.^2./R2.^2.*exp(1j*2*delta_phi).*10.^(-gama*(R2-R1)/10000)+2*R1./R2.*r_p.*exp(1j*delta_phi).*cos(alpha+beta).*10.^(-gama*(R2-R1)/20000)))-gama*R1/1000; % perda com absor√ß√£o e reflex√£o
+f_com_abs_com_ref(isnan(f_com_abs_com_ref)) = -Inf; % Remove NANs
+f_ideal = 10*log10(lambda^2./((4*pi)^2*R1.^2)); % Perda no espa√ßo sem reflex√£o e sem absor√ß√£o
+f_sem_ref = 10*log10(lambda^2./((4*pi)^2*R1.^2)) - gama*R1/1000; % Perda no espa√ßo sem reflex√£o
 
 clear R1 R2 theta alpha beta
 
@@ -92,7 +94,7 @@ hold on
 CO2(:,:,1) = 0.7*ones(length(dl),length(htl)); % red
 CO2(:,:,2) = zeros(length(dl),length(htl)); % green
 CO2(:,:,3) = zeros(length(dl),length(htl)); % blue
-mesh(htl,dl,f_sem_ref,CO2) % Plota modelo do espaco livre com absorÁ„o
+mesh(htl,dl,f_sem_ref,CO2) % Plota modelo do espaco livre com absor√ß√£o
 title('Modelos de perda devido ao caminho')
 xlabel('h_{t} (m)')
 ylabel('d (m)')
@@ -103,19 +105,19 @@ close
 %% Potencia recebida final
 Pt_dBm = 10*log10(Pt)+30; % Potencia do transmissor
 Gt = -13; % Ganho da antena transmissora
-Lcon1TX = 0.1; % Perda de conector na transmiss„o
-LcaboTX = 0.42235406; % Perda de cabo na transmiss„o
-Lcon2TX = 0.1; % Perda de conector na transmiss„o
+Lcon1TX = 0.1; % Perda de conector na transmiss√£o
+LcaboTX = 0.42235406; % Perda de cabo na transmiss√£o
+Lcon2TX = 0.1; % Perda de conector na transmiss√£o
 Lmismatch = -10*log10(1-((VSWR-1)/(VSWR+1))^2);
 Lespaco = -f_com_abs_com_ref;
-Lpol = 4; % Perda de diferenÁa de polariÁ„o entre antenas
+Lpol = 4; % Perda de diferen√ßa de polari√ß√£o entre antenas
 Ldl = 1; % Perda de desalinhamento entre antenas
 % Labs esta contabilizado em f_com_abs_com_ref
 Gr = 31.7; % Ganho da antena receptora
 Gant = 22.96; % Ganho dos componentes da antena
-L1 = 0.1; % Perda de conector na recepÁ„o
-L3 = 6.39296045; % Perda de cabo na recepÁ„o
-L2 = 0.4; % Perda de conectores na recepÁ„o
+L1 = 0.1; % Perda de conector na recep√ß√£o
+L3 = 6.39296045; % Perda de cabo na recep√ß√£o
+L2 = 0.4; % Perda de conectores na recep√ß√£o
 
 Pr_dBm = Pt_dBm+Gt-Lcon1TX-LcaboTX-Lcon2TX-Lmismatch-Lespaco-Lpol-Ldl+Gr+Gant-L1-L3-L2; % Potencia no receptor em dBm
 
@@ -133,7 +135,7 @@ dterra = Rterra * (asin(sqrt(1-(Rterra./(Rterra + htl)).^2)) + asin(sqrt(1-(Rter
 plot(dterra/1000,htl,'--r','LineWidth',3)
 ylabel('h_{t} (m)')
 xlabel('d (km)')
-title('Envelope de operaÁ„o para SNR \geq 12 dB com reflex„o')
+title('Envelope de opera√ß√£o para SNR \geq 12 dB com reflex√£o')
 grid on
 print('snr_com_ref','-dpng')
 close
@@ -146,7 +148,7 @@ hold on
 plot(dterra/1000,htl,'--r','LineWidth',3)
 ylabel('h_{t} (m)')
 xlabel('d (km)')
-title('Envelope de operaÁ„o para SNR \geq 12 dB sem reflex„o')
+title('Envelope de opera√ß√£o para SNR \geq 12 dB sem reflex√£o')
 grid on
 print('snr_sem_ref','-dpng')
 close
