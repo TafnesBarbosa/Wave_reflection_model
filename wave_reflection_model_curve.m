@@ -89,7 +89,7 @@ figure;
 CO1(:,:,1) = zeros(length(dl),length(htl)); % red
 CO1(:,:,2) = zeros(length(dl),length(htl)); % green
 CO1(:,:,3) = ones(length(dl),length(htl)); % blue
-mesh(htl,dl,f_com_abs_com_ref,CO1,'EdgeAlpha',0.15,'FaceAlpha',0.5) % Plota modelo mais completo
+mesh(htl,dl,f_com_abs_com_ref,CO1,'EdgeAlpha',0.0025,'FaceAlpha',0.05) % Plota modelo mais completo
 hold on
 CO2(:,:,1) = 0.7*ones(length(dl),length(htl)); % red
 CO2(:,:,2) = zeros(length(dl),length(htl)); % green
